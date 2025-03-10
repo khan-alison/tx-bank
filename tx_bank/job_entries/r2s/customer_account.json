@@ -1,0 +1,43 @@
+{
+    "master": "local",
+    "mode": "s3",
+    "input": [
+      {
+        "format": "csv",
+        "df_name": "accounts",
+        "table": "s3a://tx-project-source/account_deposit/accounts.csv",
+        "isCache": true,
+        "persistentLevel": "MEMORY_ONLY",
+        "option": {
+          "header": true,
+          "inferSchema": true
+        }
+      },
+      {
+        "format": "csv",
+        "df_name": "customers",
+        "table": "s3a://tx-project-source/account_deposit/customers.csv",
+        "isCache": true,
+        "persistentLevel": "MEMORY_ONLY",
+        "option": {
+          "header": true,
+          "inferSchema": true
+        }
+      }
+    ],
+    "outputs": {
+      "mode": "s3",
+      "dataframe": "customer_orders",
+      "format": "csv",
+      "scd": {
+        "type": "scd4",
+        "partition_by": ["data_date"],
+        "path": {
+          "current": "s3://tx-project-source/nnkhanh4/account_deposit/current/customers.csv",
+          "history": "s3://tx-project-source/nnkhanh4/account_deposit/history/customers.csv"
+        },
+        "primary_keys": ["customer_id", "order_id"]
+      }
+    }
+  }
+  

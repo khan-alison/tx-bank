@@ -1,0 +1,10 @@
+jars/
+venv/
+data/
+build/
+dist/
+*.egg-info/
+
+# Ignore output data
+data/output/
+.env
