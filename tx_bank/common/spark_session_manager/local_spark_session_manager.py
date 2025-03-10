@@ -10,32 +10,11 @@ logger = LoggerSimple.get_logger(__name__)
 
 
 class LocalSparkSessionManager(BaseSparkSessionManager):
-    """
-    Manages SparkSession for local execution.
-
-    This class allows running Spark locally with appropriate configurations,
-    including support for Delta Lake and custom JAR files.
-    """
 
     def __init__(self, appName: str):
-        """
-        Initializes the Local SparkSessionManager.
-
-        :param appName: The name of the Spark application.
-        """
         super().__init__(appName, "local")
 
     def _create_spark_session(self) -> SparkSession:
-        """
-        Creates and configures a SparkSession for local execution.
-
-        Includes settings for:
-        - Shuffle partition tuning
-        - Delta Lake support
-        - Custom JAR dependencies for Delta
-
-        :return: A locally configured SparkSession instance.
-        """
         load_dotenv()
         builder = (
             SparkSession.builder.appName(self.appName)
@@ -62,12 +41,6 @@ class LocalSparkSessionManager(BaseSparkSessionManager):
 
     @staticmethod
     def get_session(appName: str):
-        """
-        Retrieves or creates a local SparkSession for the given application.
-
-        :param appName: The name of the Spark application.
-        :return: The SparkSession instance.
-        """
         instance = BaseSparkSessionManager.get_instance(appName, "local")
         if instance is None:
             instance = LocalSparkSessionManager(appName)
@@ -75,9 +48,4 @@ class LocalSparkSessionManager(BaseSparkSessionManager):
 
     @staticmethod
     def close_session(appName: str):
-        """
-        Closes and removes the local SparkSession.
-
-        :param appName: The name of the Spark application.
-        """
         BaseSparkSessionManager.close_session(appName, "local")

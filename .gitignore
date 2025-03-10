@@ -8,3 +8,9 @@ dist/
 # Ignore output data
 data/output/
 .env
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.cache

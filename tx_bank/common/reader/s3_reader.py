@@ -9,24 +9,12 @@ logger = LoggerSimple.get_logger(__name__)
 
 
 class S3Reader(BaseReader):
-    """
-    S3 Reader that detects environment, fetches credentials, 
-    and reads data from a full S3 path dynamically.
-    """
 
     def __init__(self, spark: SparkSession, s3_path: str, config: dict):
-        """
-        Initializes the S3Reader with a given S3 path.
-
-        :param spark: SparkSession instance
-        :param s3_path: Full S3 path to the dataset.
-        :param config: Dictionary containing read options (format, options, etc.).
-        """
         self.spark = spark
-        self.s3_path = s3_path  # Now passing the full S3 path
+        self.s3_path = s3_path
         self.config = config
 
-        # Extract bucket name and prefix from the full path
         self.bucket_name, self.prefix = self._parse_s3_path(s3_path)
 
         self.running_in_databricks = self._is_running_in_databricks()
@@ -39,11 +27,9 @@ class S3Reader(BaseReader):
         self.format = config.get("format", "parquet")
 
     def _is_running_in_databricks(self):
-        """Check if the script is running inside Databricks."""
         return "DATABRICKS_RUNTIME_VERSION" in os.environ
 
     def _load_dbx_credentials(self):
-        """Load AWS credentials from Databricks Secrets."""
         try:
             from pyspark.dbutils import DBUtils
             self.dbutils = DBUtils(self.spark)
@@ -60,7 +46,6 @@ class S3Reader(BaseReader):
                 "DBUtils is not available. Ensure this is running inside Databricks.")
 
     def _load_local_credentials(self):
-        """Load AWS credentials from .env file for local execution."""
         logger.info("Running locally. Using .env file for AWS credentials.")
         load_dotenv()
         self.aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
@@ -68,11 +53,6 @@ class S3Reader(BaseReader):
         self.aws_region = os.getenv("AWS_REGION")
 
     def read(self) -> DataFrame:
-        """
-        Reads data from S3 using the specified format.
-
-        :return: Spark DataFrame
-        """
         options = self.config.get("option", {})
         reader = self.spark.read.format(self.format)
 
@@ -83,11 +63,6 @@ class S3Reader(BaseReader):
         return reader.load(self.s3_path)
 
     def list_s3_objects(self):
-        """
-        Lists all objects in the specified S3 folder.
-
-        :return: List of object keys
-        """
         s3_client = boto3.client(
             "s3",
             aws_access_key_id=self.aws_access_key_id,
@@ -99,7 +74,6 @@ class S3Reader(BaseReader):
         return [obj["Key"] for obj in response.get("Contents", [])] if "Contents" in response else []
 
     def _parse_s3_path(self, s3_path: str):
-        """Parses S3 path into bucket name and key prefix."""
         if not s3_path.startswith("s3a://"):
             raise ValueError(f"Invalid S3 path: {s3_path}")
 

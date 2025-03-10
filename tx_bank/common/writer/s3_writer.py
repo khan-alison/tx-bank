@@ -10,20 +10,8 @@ logger = LoggerSimple.get_logger(__name__)
 
 
 class S3Writer(BaseWriter):
-    """
-    S3 Writer that handles writing data to S3 and integrates with SCD processing.
-    It automatically manages AWS credentials and ensures proper data storage.
-    """
 
     def __init__(self, spark: SparkSession, scd_handler: SCD_Handler, scd_conf: dict = None, options: dict = None):
-        """
-        Initializes the S3Writer.
-
-        :param spark: SparkSession instance
-        :param scd_handler: An instance of SCD_Handler to process and write the data.
-        :param scd_conf: Dictionary containing SCD configurations.
-        :param options: Dictionary containing additional options.
-        """
         super().__init__(spark, scd_handler, scd_conf, options)
         self.running_in_databricks = self._is_running_in_databricks()
 
@@ -33,11 +21,9 @@ class S3Writer(BaseWriter):
             self._load_local_credentials()
 
     def _is_running_in_databricks(self):
-        """Check if the script is running inside Databricks."""
         return "DATABRICKS_RUNTIME_VERSION" in os.environ
 
     def _load_dbx_credentials(self):
-        """Load AWS credentials from Databricks Secrets."""
         try:
             from pyspark.dbutils import DBUtils
             self.dbutils = DBUtils(self.spark)
@@ -54,7 +40,6 @@ class S3Writer(BaseWriter):
                 "DBUtils is not available. Ensure this is running inside Databricks.")
 
     def _load_local_credentials(self):
-        """Load AWS credentials from .env file for local execution."""
         logger.info("Running locally. Using .env file for AWS credentials.")
         load_dotenv()
         self.aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
@@ -62,12 +47,6 @@ class S3Writer(BaseWriter):
         self.aws_region = os.getenv("AWS_REGION")
 
     def write(self, df: DataFrame, data_date: str):
-        """
-        Calls SCD_Handler to process and write data.
-
-        :param df: The Spark DataFrame to be written.
-        :param data_date: The data date used for partitioning (if applicable).
-        """
         if not self.scd_conf:
             raise ValueError("SCD Configuration is required to write data.")
 
