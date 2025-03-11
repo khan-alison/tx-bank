@@ -7,27 +7,12 @@ logger = LoggerSimple.get_logger(__name__)
 
 
 class S2I_Reader:
-    """
-    Generic Reader for all ETL jobs.
-    Reads data from local storage based on metadata configuration.
-    """
-
     def __init__(self, spark: SparkSession, metadata: dict):
-        """
-        Initializes the reader.
-
-        :param spark: SparkSession instance.
-        :param metadata: Dictionary containing metadata configuration.
-        """
         self.spark = spark
         self.metadata = metadata
         self.dataframes = {}
 
     def read(self):
-        """
-        Reads input data as per metadata configuration.
-        Loads data into self.dataframes.
-        """
         logger.info("Reading input data...")
         mode = self.metadata["mode"]
         for source in self.metadata["input"]:
@@ -44,6 +29,10 @@ class S2I_Reader:
                 reader = S3Reader(self.spark, file_path, {
                                   "format": format_type, "option": options})
             df = reader.read()
+            
+            
+            logger.info(f"df.show(20) {df.show(20)}")
+            df.show(20)
 
             if source.get("isCache", False):
                 df = df.cache()

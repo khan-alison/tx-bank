@@ -225,8 +225,10 @@ class SCD_Handler:
             ".", *[F.col(c) for c in business_cols]), 256)
         df_with_hash = df.withColumn("hash_data", hash_expr)
         logger.info(df_with_hash)
-        current_path = output_path["current"]
-        history_path = output_path["history"]
+        current_path = output_path["current"].replace(
+            "s3://", "s3a://") if output_path["current"].startswith("s3://") else output_path["current"]
+        history_path = output_path["history"].replace(
+            "s3://", "s3a://") if output_path["history"].startswith("s3://") else output_path["history"]
 
         try:
             if is_table:

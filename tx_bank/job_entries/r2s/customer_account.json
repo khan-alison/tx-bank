@@ -1,43 +1,42 @@
 {
-    "master": "local",
-    "mode": "s3",
-    "input": [
-      {
-        "format": "csv",
-        "df_name": "accounts",
-        "table": "s3a://tx-project-source/account_deposit/accounts.csv",
-        "isCache": true,
-        "persistentLevel": "MEMORY_ONLY",
-        "option": {
-          "header": true,
-          "inferSchema": true
-        }
-      },
-      {
-        "format": "csv",
-        "df_name": "customers",
-        "table": "s3a://tx-project-source/account_deposit/customers.csv",
-        "isCache": true,
-        "persistentLevel": "MEMORY_ONLY",
-        "option": {
-          "header": true,
-          "inferSchema": true
-        }
-      }
-    ],
-    "outputs": {
-      "mode": "s3",
-      "dataframe": "customer_orders",
+  "master": "local",
+  "mode": "s3",
+  "input": [
+    {
       "format": "csv",
-      "scd": {
-        "type": "scd4",
-        "partition_by": ["data_date"],
-        "path": {
-          "current": "s3://tx-project-source/nnkhanh4/account_deposit/current/customers.csv",
-          "history": "s3://tx-project-source/nnkhanh4/account_deposit/history/customers.csv"
-        },
-        "primary_keys": ["customer_id", "order_id"]
+      "df_name": "account_payment",
+      "table": "s3://tx-project-source/account_payment",
+      "isCache": true,
+      "persistentLevel": "MEMORY_ONLY",
+      "option": {
+        "header": true,
+        "inferSchema": true
+      }
+    },
+    {
+      "format": "csv",
+      "df_name": "customers",
+      "table": "s3://tx-project-source/customers/",
+      "isCache": true,
+      "persistentLevel": "MEMORY_ONLY",
+      "option": {
+        "header": true,
+        "inferSchema": true
       }
     }
+  ],
+  "outputs": {
+    "mode": "s3",
+    "dataframe": "customer_orders",
+    "format": "delta",
+    "scd": {
+      "type": "scd4",
+      "partition_by": ["data_date"],
+      "path": {
+        "current": "s3://tx-project-source/customer_payment/current/",
+        "history": "s3://tx-project-source/customer_payment/history/"
+      },
+      "primary_keys": ["customer_id", "order_id"]
+    }
   }
-  
+}

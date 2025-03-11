@@ -40,6 +40,7 @@ class S3Writer(BaseWriter):
                 "DBUtils is not available. Ensure this is running inside Databricks.")
 
     def _load_local_credentials(self):
+        """Load AWS credentials from .env file for local execution."""
         logger.info("Running locally. Using .env file for AWS credentials.")
         load_dotenv()
         self.aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
@@ -47,6 +48,12 @@ class S3Writer(BaseWriter):
         self.aws_region = os.getenv("AWS_REGION")
 
     def write(self, df: DataFrame, data_date: str):
+        """
+        Calls SCD_Handler to process and write data.
+
+        :param df: The Spark DataFrame to be written.
+        :param data_date: The data date used for partitioning (if applicable).
+        """
         if not self.scd_conf:
             raise ValueError("SCD Configuration is required to write data.")
 

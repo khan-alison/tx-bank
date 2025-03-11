@@ -27,13 +27,13 @@ class LocalSparkSessionManager(BaseSparkSessionManager):
             )
             .config(
                 "spark.jars",
-                "jars/delta-spark_2.12-3.2.0.jar, jars/delta-storage-3.2.0.jar,jars/hadoop-aws-3.2.0.jar,jars/aws-java-sdk-bundle-1.12.316.jar",
+                "jars/delta-spark_2.12-3.2.0.jar, jars/delta-storage-3.2.0.jar,jars/hadoop-aws-3.3.4.jar,jars/aws-java-sdk-bundle-1.12.316.jar, jar/hadoop-common-3.3.4.jar",
             )
             .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
             .config("spark.hadoop.fs.s3a.aws.credentials.provider", "com.amazonaws.auth.DefaultAWSCredentialsProviderChain")
             .config("spark.hadoop.fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID"))
             .config("spark.hadoop.fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY"))
-            .config("spark.hadoop.fs.s3a.endpoint", "s3.amazonaws.com")
+            .config("spark.hadoop.fs.s3a.endpoint", f"s3.{os.getenv('AWS_REGION')}.amazonaws.com")
             .config("spark.databricks.delta.schema.autoMerge.enabled", "true")
         )
         logger.info("Creating local Spark session with local jar files.")

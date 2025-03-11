@@ -11,17 +11,17 @@ class CustomerAccountTransformer:
 
     def transform(self) -> DataFrame:
         logger.info(
-            "Performing transformation: Joining Accounts with Customers.")
+            "Performing transformation: Joining Account Payment with Customers.")
 
-        if "accounts" not in self.dataframes or "customers" not in self.dataframes:
+        if "account_payment" not in self.dataframes or "customers" not in self.dataframes:
             raise ValueError(
-                "Required DataFrames (accounts, customers) are missing.")
+                "Required DataFrames (account_payment, customers) are missing.")
 
-        accounts_df = self.dataframes["accounts"]
+        accounts_df = self.dataframes["account_payment"]
         customers_df = self.dataframes["customers"]
 
         transformed_df = accounts_df.alias("a").join(
-            customers_df.alias("c"), on="CustomerID", how="inner").drop(F.col("c.AccountType"))
+            customers_df.alias("c"), on="Customer_ID", how="inner")
 
         transformed_df.show(20)
         logger.info("Transformation complete.")
